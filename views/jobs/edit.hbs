@@ -1,0 +1,29 @@
+<h3>Edit Job</h3>
+<div class="row">
+    <form action="/jobs/{{job._id}}" method="POST" class="col s12">
+     <input type="hidden" name="_method" value="PUT">
+        <div class="row">
+            <div class="input-field">
+                <input type="text" id="title" name="title" value="{{job.title}}">
+                <label for="title">Title</label>
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="input-field">
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="input-field">
+                <h5>JOB:</h5>
+                <textarea id="body" name="body">{{job.body}}</textarea>
+            </div>
+        </div>
+
+        <div class="row">
+            <input type="submit" value="Save" class="btn">
+            <a href="/dashboard" >Cancel</a>
+        </div>
+    </form>
+</div>
