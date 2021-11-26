@@ -44,6 +44,11 @@ router.post("/signup", async (req, res) => {
       return res.status(400).send({ error: "Password and confirm password do not match" });
     }
 
+    let user = await User.findOne({ email });
+    if (user) {
+      res.status(400).send({ error: "User already exists, sign in instead" });
+    }
+
     const user = new User({
       email,
       password,
