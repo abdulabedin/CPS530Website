@@ -49,7 +49,7 @@ router.post("/signup", async (req, res) => {
       res.status(400).send({ error: "User already exists, sign in instead" });
     }
 
-    const user = new User({
+    user = new User({
       email,
       password,
       firstName,
