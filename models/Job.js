@@ -4,7 +4,6 @@ const JobsSchema = new mongoose.Schema({
   title: {
     type: String,
     required: true,
-    trim: true,
   },
   company: {
     type: String,
@@ -16,11 +15,9 @@ const JobsSchema = new mongoose.Schema({
   },
   salary: {
     type: String,
-    required: true,
   },
   location: {
     type: String,
-    required: true,
   },
   status: {
     type: String,
@@ -28,15 +25,12 @@ const JobsSchema = new mongoose.Schema({
   },
   link: {
     type: String,
-    required: true,
   },
   resume: {
     type: String,
-    required: true,
   },
   coverLetter: {
     type: String,
-    required: true,
   },
   user: {
     type: mongoose.Schema.Types.ObjectId,

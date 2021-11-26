@@ -30,6 +30,7 @@ const requireAuth = require("../middleware/requireAuth");
 
 router.post("/signup", async (req, res) => {
   try {
+    console.log(req.body);
     const { firstName, lastName, email, password, confirmPassword } = req.body;
     if (isEmpty(email) || isEmpty(password) || isEmpty(firstName) || isEmpty(lastName) || isEmpty(confirmPassword)) {
       return res.status(400).send({ error: "All fields are required" });
@@ -78,7 +79,7 @@ router.post("/login", async (req, res) => {
       firstName: user.firstName,
     });
   } catch (err) {
-    return res.status(400).send({ error: "Invalid email or password" });
+    return res.status(400).send({ error: err.message });
   }
 });
 
@@ -92,18 +93,29 @@ router.get("/jobs", requireAuth, async (req, res) => {
   }
 });
 
-router.put("/job/id");
-
-router.post("/job", requireAuth, async (req, res) => {
+router.put("/jobs/:id", requireAuth, async (req, res) => {
   try {
-    console.log(req.body);
+    const jobId = req.params.id;
+    await Job.updateOne({ _id: jobId }, { ...req.body });
+
+    const jobs = await Job.find({ user: req.user._id });
+    return res.status(200).send(jobs);
+  } catch (err) {
+    console.log(err);
+    return res.status(400).send({ error: err.message });
+  }
+});
+
+router.post("/jobs", requireAuth, async (req, res) => {
+  try {
     let job = new Job({
       ...req.body,
       user: req.user._id,
     });
 
-    job.save();
-    const jobs = await Job.find({});
+    await job.save();
+
+    const jobs = await Job.find({ user: req.user._id });
     return res.status(200).send(jobs);
   } catch (err) {
     console.log(err);
@@ -112,7 +124,7 @@ router.post("/job", requireAuth, async (req, res) => {
   }
 });
 
-router.delete("/:id", requireAuth, async (req, res) => {
+router.delete("/jobs/:id", requireAuth, async (req, res) => {
   try {
     const id = req.params.id;
     let job = await Job.findById(id).lean();
@@ -121,15 +133,16 @@ router.delete("/:id", requireAuth, async (req, res) => {
       return res.status(400).send({ error: "Job not found" });
     }
 
-    if (job.user != req.user._id) {
+    if (job.user.toString() != req.user._id.toString()) {
       return res.status(400).send({ error: "Unauthorized user" });
     } else {
-      await Job.remove({ _id: id });
-      const jobs = await Job.find({});
+      await Job.deleteOne({ _id: id });
+      const jobs = await Job.find({ user: req.user._id });
       return res.status(200).send(jobs);
     }
   } catch (err) {
     console.log("error");
+    return res.status(400).send({ error: err.message });
   }
 });
 
