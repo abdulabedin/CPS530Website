@@ -4,6 +4,7 @@ const mongoose = require("mongoose");
 const Job = require("../models/Job");
 const User = require("../models/User");
 const jwt = require("jsonwebtoken");
+const requireAuth = require("../middleware/requireAuth");
 
 // const passport = require("passport");
 // const { ensureAuth, ensureGuest } = require("../routes/authverify");
@@ -81,9 +82,9 @@ router.post("/login", async (req, res) => {
   }
 });
 
-router.get("/jobs", async (req, res) => {
+router.get("/jobs", requireAuth, async (req, res) => {
   try {
-    const jobs = await Job.find({});
+    const jobs = await Job.find({ user: req.user._id });
     return res.status(200).send(jobs);
   } catch (err) {
     console.log(err);
@@ -91,13 +92,19 @@ router.get("/jobs", async (req, res) => {
   }
 });
 
-router.post("/job", async (req, res) => {
+router.put("/job/id");
+
+router.post("/job", requireAuth, async (req, res) => {
   try {
     console.log(req.body);
-    let job = await new Job({ ...req.body });
+    let job = new Job({
+      ...req.body,
+      user: req.user._id,
+    });
 
+    job.save();
     const jobs = await Job.find({});
-    return res.status(jobs);
+    return res.status(200).send(jobs);
   } catch (err) {
     console.log(err);
 
@@ -105,37 +112,29 @@ router.post("/job", async (req, res) => {
   }
 });
 
-router.delete("/:id", async (req, res) => {
+router.delete("/:id", requireAuth, async (req, res) => {
   try {
-    let jobs = await Job.findById(req.params.id).lean();
+    const id = req.params.id;
+    let job = await Job.findById(id).lean();
 
-    if (!jobs) {
-      res.redirect("/");
+    if (!job) {
+      return res.status(400).send({ error: "Job not found" });
     }
 
-    if (jobs.user != req.user.id) {
-      res.redirect("/");
+    if (job.user != req.user._id) {
+      return res.status(400).send({ error: "Unauthorized user" });
     } else {
-      await Job.remove({ _id: req.params.id });
-      res.redirect("/dashboard");
+      await Job.remove({ _id: id });
+      const jobs = await Job.find({});
+      return res.status(200).send(jobs);
     }
   } catch (err) {
     console.log("error");
   }
 });
 
-router.get("/:id", ensureAuth, async (req, res) => {
-  let job = await Job.findById(req.params.id).populate("user").lean();
-
-  if (job) {
-    res.render("jobs/show", {
-      job,
-    });
-  }
-});
-
 router.get("/", (req, res) => {
-  res.render("Login");
+  return res.status(200).send("Hello World");
 });
 
 //     if (story.user._id != req.user.id && story.status == 'private') {
