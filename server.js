@@ -49,4 +49,4 @@ server.use(cors());
 server.use("/", routes);
 
 const PORT = 5000;
-server.listen(PORT, console.log("Server Running"));
+server.listen(process.env.PORT || PORT, console.log("Server Running"));
