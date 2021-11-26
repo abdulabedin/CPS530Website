@@ -57,7 +57,10 @@ router.post("/signup", async (req, res) => {
     });
 
     await user.save();
-    const token = await jwt.sign({ userId: user._id, email: user.email }, process.env.SECRET_KEY);
+    const token = await jwt.sign(
+      { userId: user._id, email: user.email, firstName: user.firstName },
+      process.env.SECRET_KEY
+    );
     res.status(200).send({ token, userId: user._id, firstName: user.firstName });
   } catch (err) {
     return res.status(400).send({ error: err.message });
@@ -77,7 +80,7 @@ router.post("/login", async (req, res) => {
     }
 
     await user.comparePassword(password);
-    const token = jwt.sign({ userId: user._id, email: user.email }, process.env.SECRET_KEY);
+    const token = jwt.sign({ userId: user._id, email: user.email, firstName: user.firstName }, process.env.SECRET_KEY);
     res.status(200).send({
       token,
       userId: user._id,
