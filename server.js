@@ -2,14 +2,13 @@ require("dotenv").config();
 const express = require("express");
 const server = express();
 const connectDB = require("./database");
-// const exphbs = require("express-handlebars");
-// const passport = require("passport");
-const mongoose = require("mongoose");
-// const session = require("express-session");
-const MongoStore = require("connect-mongo");
 const cors = require("cors");
 const routes = require("./routes");
-
+// const exphbs = require("express-handlebars");
+// const passport = require("passport");
+// const mongoose = require("mongoose");
+// const session = require("express-session");
+// const MongoStore = require("connect-mongo");
 // const methodOverride = require("method-override");
 
 connectDB();

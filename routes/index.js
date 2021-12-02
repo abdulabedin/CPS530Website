@@ -63,6 +63,7 @@ router.post("/signup", async (req, res) => {
     );
     res.status(200).send({ token, userId: user._id, firstName: user.firstName });
   } catch (err) {
+    console.log(err);
     return res.status(400).send({ error: err.message });
   }
 });
@@ -75,11 +76,13 @@ router.post("/login", async (req, res) => {
     }
 
     const user = await User.findOne({ email });
+
     if (!user) {
-      return res.status(400).send({ error: "Invalid email or password" });
+      return res.status(400).send({ error: "Invalid email" });
     }
 
     await user.comparePassword(password);
+
     const token = jwt.sign({ userId: user._id, email: user.email, firstName: user.firstName }, process.env.SECRET_KEY);
     res.status(200).send({
       token,
@@ -87,6 +90,7 @@ router.post("/login", async (req, res) => {
       firstName: user.firstName,
     });
   } catch (err) {
+    console.log(err);
     return res.status(400).send({ error: err.message });
   }
 });

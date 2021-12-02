@@ -52,7 +52,7 @@ UserSchema.methods.comparePassword = function (candidatePassword) {
         return reject(err);
       }
       if (!isMatch) {
-        return reject(false);
+        return reject({ message: "Passwords do not match" });
       }
       resolve(true);
     });
